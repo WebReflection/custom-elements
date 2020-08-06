@@ -9,7 +9,7 @@
     "copy": "echo '/*! (c) Andrea Giammarchi @webreflection ISC */' > index.js && cat tmp.js >> index.js",
     "delete": "rm bundle/index.js && rm tmp.js",
     "patch": "sed -i.bck 's/new Promise/new Lie/; s/.*setPrototypeOf.*HTMLBuiltIn.*//' index.js && rm -rf index.js.bck",
-    "rollup": "rollup --config rollup/babel.config.js",
+    "rollup": "rollup --config rollup/babel.config.js && rollup --config rollup/test.config.js",
     "min": "terser index.js --comments='/^!/' -c -m -o min.js",
     "size": "cat min.js | gzip | wc -c"
   },

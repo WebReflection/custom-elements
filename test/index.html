@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>custom-elements</title>
+  <style>
+  custom-element, div[is="built-in"] {
+    display: block;
+    font-weight: bold;
+  }
+  </style>
+  <script src="../index.js"></script>
+  <script src="./index.js"></script>
+  <script>
+  setTimeout(function () {
+    document.body.textContent = '';
+  }, 1000);
+  </script>
+</head>
+<body>
+  <custom-element test="some attribute"></custom-element>
+  <div is="built-in" test="some attribute"></div>
+</body>
+</html>

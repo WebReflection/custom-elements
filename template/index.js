@@ -5,7 +5,7 @@ if (legacy) {
 }
 else {
   try {
-    customElements.define('built-in', document.createElement('p').constructor, {'extends': 'p'});
+    customElements.define('p-constructor', document.createElement('p').constructor, {'extends': 'p'});
   }
   catch (o_O) {
     legacy = true;
