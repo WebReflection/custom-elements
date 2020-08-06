@@ -1,8 +1,7 @@
 let legacy = !self.customElements;
 
-if (legacy) {
-  // @webreflection/custom-elements-no-builtin/esm/index.js
-}
+// @webreflection/custom-elements-no-builtin/esm/index.js
+
 else {
   try {
     const is = 'extends-li';

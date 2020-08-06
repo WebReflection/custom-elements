@@ -119,7 +119,7 @@
 
   var legacy = !self.customElements;
 
-  if (legacy) {
+  if (!self.customElements) {
     var HTMLBuiltIn = function HTMLBuiltIn() {
       var constructor = this.constructor;
       if (!classes.has(constructor)) throw new TypeError('Illegal constructor');
