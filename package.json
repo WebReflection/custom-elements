@@ -28,5 +28,13 @@
     "@webreflection/custom-elements-no-builtin": "^0.1.1",
     "rollup": "^2.23.0",
     "terser": "^5.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebReflection/custom-elements.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WebReflection/custom-elements/issues"
+  },
+  "homepage": "https://github.com/WebReflection/custom-elements#readme"
 }
