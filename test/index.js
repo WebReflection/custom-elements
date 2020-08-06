@@ -170,9 +170,13 @@
     }]);
 
     function _class() {
+      var _this;
+
       _classCallCheck(this, _class);
 
-      return _super.call(this);
+      _this = _super.call(this);
+      console.log(_this.tagName, 'constructed');
+      return _this;
     }
 
     _createClass(_class, [{
@@ -208,9 +212,13 @@
     }]);
 
     function _class2() {
+      var _this2;
+
       _classCallCheck(this, _class2);
 
-      return _super2.call(this);
+      _this2 = _super2.call(this);
+      console.log(_this2.tagName, 'constructed');
+      return _this2;
     }
 
     _createClass(_class2, [{
