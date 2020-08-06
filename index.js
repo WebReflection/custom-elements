@@ -243,11 +243,15 @@
     });
   } else {
     try {
-      customElements.define('p-constructor', document.createElement('p').constructor, {
-        'extends': 'p'
+      var is = 'extends-li';
+      customElements.define(is, HTMLLIElement, {
+        'extends': 'li'
       });
+      if (document.createElement('li', {
+        is: is
+      }).outerHTML.indexOf(is) < 0) legacy = !legacy;
     } catch (o_O) {
-      legacy = true;
+      legacy = !legacy;
     }
   }
 

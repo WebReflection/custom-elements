@@ -5,10 +5,13 @@ if (legacy) {
 }
 else {
   try {
-    customElements.define('p-constructor', document.createElement('p').constructor, {'extends': 'p'});
+    const is = 'extends-li';
+    customElements.define(is, HTMLLIElement, {'extends': 'li'});
+    if (document.createElement('li', {is}).outerHTML.indexOf(is) < 0)
+      legacy = !legacy;
   }
   catch (o_O) {
-    legacy = true;
+    legacy = !legacy;
   }
 }
 
