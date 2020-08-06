@@ -8,7 +8,7 @@ An unobtrusive customElements V1 polyfill, in about *~2K* all inclusive.
   * for even more legacy browsers, ditch this module and use [document-register-element](https://github.com/WebReflection/document-register-element#readme) instead
 
 
-### Compatibility
+## Compatibility
 
 The polyfill unobtrusively, and incrementally, patches the following minimum versions of these browsers (but it could work in earlier versions too):
 
