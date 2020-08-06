@@ -10,13 +10,14 @@ An unobtrusive customElements V1 polyfill, in about *~2K* all inclusive.
 
 ## Compatibility
 
-The polyfill unobtrusively, and incrementally, patches the following minimum versions of these browsers (but it could work in earlier versions too):
+The polyfill unobtrusively, and incrementally, patches the following minimum versions of these browsers, accordingly to MDN:
 
-  * Chrome 52
-  * Firefox 52, including ESR
-  * Internet Explorer 11 and Edge (pre Chromium)
-  * Safari Desktop and Mobile, including all WebKit variants
-
+  * Chrome 38
+  * Firefox 14
+  * Opera 25
+  * Internet Explorer 11 and Edge 12 (pre Chromium)
+  * Safari 8 and WebKit based
+  * Samsung Internet 3
 
 ## How To Test
 
