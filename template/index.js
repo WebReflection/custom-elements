@@ -1,6 +1,6 @@
-let {customElements} = self;
+let legacy = !self.customElements;
 
-if (!customElements) {
+if (legacy) {
   // @webreflection/custom-elements-no-builtin/esm/index.js
 }
 else {
@@ -8,10 +8,10 @@ else {
     customElements.define('built-in', document.createElement('p').constructor, {'extends': 'p'});
   }
   catch (o_O) {
-    customElements = null;
+    legacy = true;
   }
 }
 
-if (!customElements) {
+if (legacy) {
   // @webreflection/custom-elements-builtin/esm/index.js
 }

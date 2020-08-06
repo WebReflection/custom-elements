@@ -117,10 +117,9 @@
     };
   });
 
-  var _self = self,
-      customElements = _self.customElements;
+  var legacy = !self.customElements;
 
-  if (!customElements) {
+  if (legacy) {
     var HTMLBuiltIn = function HTMLBuiltIn() {
       var constructor = this.constructor;
       if (!classes.has(constructor)) throw new TypeError('Illegal constructor');
@@ -248,11 +247,11 @@
         'extends': 'p'
       });
     } catch (o_O) {
-      customElements = null;
+      legacy = true;
     }
   }
 
-  if (!customElements) {
+  if (legacy) {
     var parseShadow = function parseShadow(element) {
       var _shadowRoots$get = shadowRoots.get(element),
           parse = _shadowRoots$get.parse,
