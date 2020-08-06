@@ -14,6 +14,9 @@ ${''.replace.call(
   template,
   /\/\/ (@webreflection\/.+)/g,
   (_, path) => readFileSync(join(__dirname, '..', 'node_modules', path))
-).replace(/import .*/g, '')}
+)
+  .replace(/import .*/g, '')
+  .replace('if (!self.customElements) {', 'if (legacy) {')
+}
 `
 );
