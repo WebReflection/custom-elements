@@ -1,0 +1,32 @@
+{
+  "name": "@webreflection/custom-elements",
+  "version": "0.0.2",
+  "description": "All inclusive customElements polyfill for every browser",
+  "main": "index.js",
+  "unpkg": "min.js",
+  "scripts": {
+    "build": "node bundle/build.js && npm run rollup && npm run copy && npm run patch && npm run delete && npm run min && npm run size",
+    "copy": "echo '/*! (c) Andrea Giammarchi @webreflection ISC */' > index.js && cat tmp.js >> index.js",
+    "delete": "rm bundle/index.js && rm tmp.js",
+    "patch": "sed -i.bck 's/new Promise/new Lie/; s/.*setPrototypeOf.*HTMLBuiltIn.*//' index.js && rm -rf index.js.bck",
+    "rollup": "rollup --config rollup/babel.config.js",
+    "min": "terser index.js --comments='/^!/' -c -m -o min.js",
+    "size": "cat min.js | gzip | wc -c"
+  },
+  "keywords": [
+    "customElements",
+    "polyfill"
+  ],
+  "author": "Andrea Giammarchi",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "@rollup/plugin-babel": "^5.1.0",
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@webreflection/custom-elements-builtin": "^0.1.9",
+    "@webreflection/custom-elements-no-builtin": "^0.1.1",
+    "rollup": "^2.23.0",
+    "terser": "^5.0.0"
+  }
+}
