@@ -2,13 +2,25 @@
   "name": "@webreflection/custom-elements",
   "version": "0.1.7",
   "description": "All inclusive customElements polyfill for every browser",
-  "main": "index.js",
+  "main": "./cjs/index.js",
   "unpkg": "min.js",
+  "module": "./esm/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "default": "./cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "node bundle/build.js && npm run rollup && npm run copy && npm run patch && npm run delete && npm run min && npm run size",
+    "build": "node bundle/build.js && npm run rollup && npm run copy && npm run move && npm run patch && npm run pony && npm run modules && npm run delete && npm run min && npm run size",
     "copy": "echo '/*! (c) Andrea Giammarchi @webreflection ISC */' > index.js && cat tmp.js >> index.js",
-    "delete": "rm bundle/index.js && rm tmp.js",
-    "patch": "sed -i.bck 's/new Promise/new Lie/; s/.*setPrototypeOf.*HTMLBuiltIn.*//' index.js && rm -rf index.js.bck",
+    "modules": "mv pony.js esm/index.js && ascjs --no-default esm cjs",
+    "move": "echo '/*! (c) Andrea Giammarchi @webreflection ISC */' > pony.js && cat bundle/pony.js >> pony.js",
+    "delete": "rm bundle/index.js && rm bundle/pony.js && rm tmp.js",
+    "patch": "sed -i.bck 's/.*setPrototypeOf.*HTMLBuiltIn.*//' index.js && rm -rf index.js.bck",
+    "pony": "sed -i.bck 's/.*setPrototypeOf.*HTMLBuiltIn.*//' pony.js && rm -rf pony.js.bck",
     "rollup": "rollup --config rollup/babel.config.js && rollup --config rollup/test.config.js",
     "min": "terser index.js --comments='/^!/' -c -m -o min.js",
     "size": "cat min.js | gzip | wc -c"
@@ -24,8 +36,9 @@
     "@babel/preset-env": "^7.11.0",
     "@rollup/plugin-babel": "^5.1.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
-    "@webreflection/custom-elements-builtin": "^0.1.9",
-    "@webreflection/custom-elements-no-builtin": "^0.1.2",
+    "@webreflection/custom-elements-builtin": "^0.1.11",
+    "@webreflection/custom-elements-no-builtin": "^0.1.7",
+    "ascjs": "^4.0.1",
     "rollup": "^2.23.0",
     "terser": "^5.0.0"
   },
@@ -36,5 +49,10 @@
   "bugs": {
     "url": "https://github.com/WebReflection/custom-elements/issues"
   },
-  "homepage": "https://github.com/WebReflection/custom-elements#readme"
+  "homepage": "https://github.com/WebReflection/custom-elements#readme",
+  "dependencies": {
+    "@webreflection/custom-elements-attributes": "^0.1.3",
+    "@webreflection/lie": "^0.1.1",
+    "qsa-observer": "^1.1.5"
+  }
 }

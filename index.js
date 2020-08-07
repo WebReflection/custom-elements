@@ -20,6 +20,51 @@
     }
   };
 
+  var attributesObserver = (function (whenDefined, MutationObserver) {
+    var attributeChanged = function attributeChanged(records) {
+      for (var i = 0, length = records.length; i < length; i++) {
+        dispatch(records[i]);
+      }
+    };
+
+    var dispatch = function dispatch(_ref) {
+      var target = _ref.target,
+          attributeName = _ref.attributeName,
+          oldValue = _ref.oldValue;
+      target.attributeChangedCallback(attributeName, oldValue, target.getAttribute(attributeName));
+    };
+
+    return function (target, is) {
+      var attributeFilter = target.constructor.observedAttributes;
+
+      if (attributeFilter) {
+        whenDefined(is).then(function () {
+          new MutationObserver(attributeChanged).observe(target, {
+            attributes: true,
+            attributeOldValue: true,
+            attributeFilter: attributeFilter
+          });
+
+          for (var i = 0, length = attributeFilter.length; i < length; i++) {
+            if (target.hasAttribute(attributeFilter[i])) dispatch({
+              target: target,
+              attributeName: attributeFilter[i],
+              oldValue: null
+            });
+          }
+        });
+      }
+
+      return target;
+    };
+  });
+
+  var _self = self,
+      document = _self.document,
+      MutationObserver = _self.MutationObserver,
+      Set = _self.Set,
+      WeakMap = _self.WeakMap;
+
   var elements = function elements(element) {
     return 'querySelectorAll' in element;
   };
@@ -117,6 +162,19 @@
     };
   });
 
+  var _self$1 = self,
+      document$1 = _self$1.document,
+      Map = _self$1.Map,
+      MutationObserver$1 = _self$1.MutationObserver,
+      Object = _self$1.Object,
+      Set$1 = _self$1.Set,
+      WeakMap$1 = _self$1.WeakMap,
+      Element = _self$1.Element,
+      HTMLElement = _self$1.HTMLElement,
+      Node = _self$1.Node,
+      Error = _self$1.Error,
+      TypeError = _self$1.TypeError;
+  var Promise$1 = self.Promise || Lie;
   var legacy = !self.customElements;
 
   if (legacy) {
@@ -125,10 +183,11 @@
       if (!classes.has(constructor)) throw new TypeError('Illegal constructor');
       var is = classes.get(constructor);
       if (override) return augment(override, is);
-      var element = createElement.call(document, is);
+      var element = createElement.call(document$1, is);
       return augment(setPrototypeOf(element, constructor.prototype), is);
     };
 
+    var createElement = document$1.createElement;
     var defineProperty = Object.defineProperty,
         setPrototypeOf = Object.setPrototypeOf;
     var classes = new Map();
@@ -136,36 +195,6 @@
     var prototypes = new Map();
     var registry = new Map();
     var query = [];
-
-    var attributeChanged = function attributeChanged(records) {
-      for (var i = 0, length = records.length; i < length; i++) {
-        var _records$i = records[i],
-            target = _records$i.target,
-            attributeName = _records$i.attributeName,
-            oldValue = _records$i.oldValue;
-        var newValue = target.getAttribute(attributeName);
-        target.attributeChangedCallback(attributeName, oldValue, newValue);
-      }
-    };
-
-    var augment = function augment(element, is) {
-      var attributeFilter = element.constructor.observedAttributes;
-
-      if (attributeFilter) {
-        whenDefined(is).then(function () {
-          new MutationObserver(attributeChanged).observe(element, {
-            attributes: true,
-            attributeOldValue: true,
-            attributeFilter: attributeFilter
-          });
-          attributeFilter.forEach(function (attributeName) {
-            if (element.hasAttribute(attributeName)) element.attributeChangedCallback(attributeName, null, element.getAttribute(attributeName));
-          });
-        });
-      }
-
-      return element;
-    };
 
     var handle = function handle(element, connected, selector) {
       var proto = prototypes.get(selector);
@@ -208,9 +237,9 @@
       return defined.get(name).$;
     };
 
+    var augment = attributesObserver(whenDefined, MutationObserver$1);
     defineProperty(self, 'customElements', {
       configurable: true,
-      writable: true,
       value: {
         define: function define(is, Class) {
           if (registry.has(is)) throw new Error("the name \"".concat(is, "\" has already been used with this registry"));
@@ -219,7 +248,7 @@
           registry.set(is, Class);
           query.push(is);
           whenDefined(is).then(function () {
-            parse(document.querySelectorAll(is));
+            parse(document$1.querySelectorAll(is));
           });
 
           defined.get(is)._();
@@ -232,24 +261,38 @@
     });
     (HTMLBuiltIn.prototype = HTMLElement.prototype).constructor = HTMLBuiltIn;
     defineProperty(self, 'HTMLElement', {
+      configurable: true,
       value: HTMLBuiltIn
+    });
+    defineProperty(document$1, 'createElement', {
+      configurable: true,
+      value: function value(name, options) {
+        var is = options && options.is;
+        return is ? new (registry.get(is))() : createElement.call(document$1, name);
+      }
     }); // in case ShadowDOM is used through a polyfill, to avoid issues
     // with builtin extends within shadow roots
 
     if (!('isConnected' in Node.prototype)) defineProperty(Node.prototype, 'isConnected', {
+      configurable: true,
       get: function get() {
         return !(this.ownerDocument.compareDocumentPosition(this) & this.DOCUMENT_POSITION_DISCONNECTED);
       }
     });
   } else {
     try {
+      var LI = function LI() {
+        return self.Reflect.construct(HTMLLIElement, [], LI);
+      };
+
+      LI.prototype = HTMLLIElement.prototype;
       var is = 'extends-li';
-      customElements.define(is, HTMLLIElement, {
+      self.customElements.define('extends-li', LI, {
         'extends': 'li'
       });
-      if (document.createElement('li', {
+      legacy = document$1.createElement('li', {
         is: is
-      }).outerHTML.indexOf(is) < 0) legacy = !legacy;
+      }).outerHTML.indexOf(is) < 0;
     } catch (o_O) {
       legacy = !legacy;
     }
@@ -264,16 +307,16 @@
       parse(root.querySelectorAll(this), element.isConnected);
     };
 
+    var customElements = self.customElements;
     var attachShadow = Element.prototype.attachShadow;
+    var _createElement = document$1.createElement;
+    var define = customElements.define,
+        get = customElements.get;
     var _defineProperty = Object.defineProperty,
         getOwnPropertyNames = Object.getOwnPropertyNames,
         _setPrototypeOf = Object.setPrototypeOf;
-    var _customElements = customElements,
-        define = _customElements.define,
-        get = _customElements.get;
-    var _document = document,
-        _createElement = _document.createElement;
-    var shadowRoots = new WeakMap();
+    var shadowRoots = new WeakMap$1();
+    var shadows = new Set$1();
 
     var _classes = new Map();
 
@@ -283,39 +326,8 @@
 
     var _registry = new Map();
 
-    var shadows = new Set();
     var shadowed = [];
     var _query = [];
-
-    var _attributeChanged = function _attributeChanged(records) {
-      for (var i = 0, length = records.length; i < length; i++) {
-        var _records$i2 = records[i],
-            target = _records$i2.target,
-            attributeName = _records$i2.attributeName,
-            oldValue = _records$i2.oldValue;
-        var newValue = target.getAttribute(attributeName);
-        target.attributeChangedCallback(attributeName, oldValue, newValue);
-      }
-    };
-
-    var _augment = function _augment(element, is) {
-      var attributeFilter = element.constructor.observedAttributes;
-
-      if (attributeFilter) {
-        _whenDefined(is).then(function () {
-          new MutationObserver(_attributeChanged).observe(element, {
-            attributes: true,
-            attributeOldValue: true,
-            attributeFilter: attributeFilter
-          });
-          attributeFilter.forEach(function (attributeName) {
-            if (element.hasAttribute(attributeName)) element.attributeChangedCallback(attributeName, null, element.getAttribute(attributeName));
-          });
-        });
-      }
-
-      return element;
-    };
 
     var getCE = function getCE(name) {
       return _registry.get(name) || get.call(customElements, name);
@@ -358,7 +370,7 @@
     var _whenDefined = function _whenDefined(name) {
       if (!_defined.has(name)) {
         var _,
-            $ = new Lie(function ($) {
+            $ = new Promise$1(function ($) {
           _ = $;
         });
 
@@ -370,6 +382,8 @@
 
       return _defined.get(name).$;
     };
+
+    var _augment = attributesObserver(_whenDefined, MutationObserver$1);
 
     var _override = null;
     getOwnPropertyNames(self).filter(function (k) {
@@ -385,7 +399,7 @@
 
         if (_override) return _augment(_override, is);
 
-        var element = _createElement.call(document, tag);
+        var element = _createElement.call(document$1, tag);
 
         element.setAttribute('is', is);
         return _augment(_setPrototypeOf(element, constructor.prototype), is);
@@ -445,10 +459,10 @@
 
         _whenDefined(is).then(function () {
           if (tag) {
-            _parse(document.querySelectorAll(selector));
+            _parse(document$1.querySelectorAll(selector));
 
             shadows.forEach(parseShadow, [selector]);
-          } else parseShadowed(document.querySelectorAll(selector));
+          } else parseShadowed(document$1.querySelectorAll(selector));
         });
 
         _defined.get(is)._();
@@ -463,10 +477,10 @@
       value: _whenDefined
     });
 
-    _defineProperty(document, 'createElement', {
+    _defineProperty(document$1, 'createElement', {
       value: function value(name, options) {
         var is = options && options.is;
-        return is ? new (_registry.get(is))() : _createElement.call(document, name);
+        return is ? new (_registry.get(is))() : _createElement.call(document$1, name);
       }
     });
   }

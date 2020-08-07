@@ -3,13 +3,26 @@
 const {readFileSync, writeFileSync} = require('fs');
 const {join} = require('path');
 
-const template = readFileSync(join(__dirname, '..', 'template', 'index.js'));
+build('index.js');
+build('pony.js');
 
-writeFileSync(
-  join(__dirname, 'index.js'),
+function build(file) {
+
+  const template = readFileSync(join(__dirname, '..', 'template', file));
+
+  writeFileSync(
+    join(__dirname, file),
   `
 import Lie from '@webreflection/lie';
+import attributesObserver from '@webreflection/custom-elements-attributes';
 import qsaObserver from 'qsa-observer';
+const {
+  document,
+  Map, MutationObserver, Object, Set, WeakMap,
+  Element, HTMLElement, Node,
+  Error, TypeError
+} = self;
+const Promise = self.Promise || Lie;
 ${''.replace.call(
   template,
   /\/\/ (@webreflection\/.+)/g,
@@ -17,6 +30,11 @@ ${''.replace.call(
 )
   .replace(/import .*/g, '')
   .replace('if (!self.customElements) {', 'if (legacy) {')
+  .replace(/const \{[^}]+\} = self;/g, '')
+  .replace(/[\r\n]{2,}/g, '\n')
+  .trim()
 }
 `
-);
+  );
+
+}
