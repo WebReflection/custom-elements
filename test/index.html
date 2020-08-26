@@ -14,7 +14,15 @@
   <script src="./index.js"></script>
   <script>
   setTimeout(function () {
-    document.body.textContent = '';
+    document.body.appendChild(
+      document.createElement('custom-element')
+    );
+    document.body.appendChild(
+      document.createElement('div', {is: 'built-in'})
+    );
+    setTimeout(function () {
+      document.body.textContent = '';
+    }, 1000);
   }, 1000);
   </script>
 </head>

@@ -217,6 +217,9 @@
       _classCallCheck(this, _class2);
 
       _this2 = _super2.call(this);
+
+      _this2.setAttribute('is', 'built-in');
+
       console.log(_this2.tagName, 'constructed');
       return _this2;
     }

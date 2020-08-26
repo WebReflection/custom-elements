@@ -22,6 +22,7 @@ customElements.define(
     static get observedAttributes() { return ['test']; }
     constructor() {
       super();
+      this.setAttribute('is', 'built-in');
       console.log(this.tagName, 'constructed');
     }
     attributeChangedCallback(name, oldValue, newValue) {
