@@ -10,6 +10,7 @@ const {
   Error, TypeError
 } = self;
 const Promise = self.Promise || Lie;
+const {defineProperty, getOwnPropertyNames, setPrototypeOf} = Object;
 export default self => {
   let legacy = !self.customElements;
   
@@ -17,7 +18,7 @@ if (legacy) {
   
   
   const {createElement} = document;
-  const {defineProperty, setPrototypeOf} = Object;
+  
   const classes = new Map;
   const defined = new Map;
   const prototypes = new Map;
@@ -57,9 +58,9 @@ if (legacy) {
         whenDefined(is).then(() => {
           parse(document.querySelectorAll(is));
         });
-        defined.get(is)._();
+        defined.get(is)._(Class);
       },
-      get: selector => registry.get(selector),
+      get: is => registry.get(is),
       whenDefined
     }
   });
@@ -105,6 +106,13 @@ if (legacy) {
       const is = 'extends-li';
       self.customElements.define('extends-li', LI, {'extends': 'li'});
       legacy = document.createElement('li', {is}).outerHTML.indexOf(is) < 0;
+      const {get, whenDefined} = self.customElements;
+      defineProperty(self.customElements, 'whenDefined', {
+        configurable: true,
+        value(is) {
+          return whenDefined.call(this, is).then(value => value || get.call(this, is))
+        }
+      });
     }
     catch (o_O) {
       legacy = !legacy;
@@ -116,7 +124,6 @@ if (legacy) {
 const {attachShadow} = Element.prototype;
 const {createElement} = document;
 const {define, get} = customElements;
-const {defineProperty, getOwnPropertyNames, setPrototypeOf} = Object;
 const shadowRoots = new WeakMap;
 const shadows = new Set;
 const classes = new Map;
@@ -125,7 +132,7 @@ const prototypes = new Map;
 const registry = new Map;
 const shadowed = [];
 const query = [];
-const getCE = name => registry.get(name) || get.call(customElements, name);
+const getCE = is => registry.get(is) || get.call(customElements, is);
 const handle = (element, connected, selector) => {
   const proto = prototypes.get(selector);
   if (connected && !proto.isPrototypeOf(element)) {
@@ -177,6 +184,12 @@ getOwnPropertyNames(self)
     (HTMLBuiltIn.prototype = self[k].prototype).constructor = HTMLBuiltIn;
     defineProperty(self, k, {value: HTMLBuiltIn});
   });
+defineProperty(document, 'createElement', {
+  value(name, options) {
+    const is = options && options.is;
+    return is ? new (registry.get(is)) : createElement.call(document, name);
+  }
+});
 defineProperty(Element.prototype, 'attachShadow', {
   value() {
     const root = attachShadow.apply(this, arguments);
@@ -185,7 +198,16 @@ defineProperty(Element.prototype, 'attachShadow', {
     return root;
   }
 });
+defineProperty(customElements, 'get', {
+  configurable: true,
+  value: getCE
+});
+defineProperty(customElements, 'whenDefined', {
+  configurable: true,
+  value: whenDefined
+});
 defineProperty(customElements, 'define', {
+  configurable: true,
   value(is, Class, options) {
     let selector;
     const tag = options && options.extends;
@@ -210,15 +232,7 @@ defineProperty(customElements, 'define', {
       else
         parseShadowed(document.querySelectorAll(selector));
     });
-    defined.get(is)._();
-  }
-});
-defineProperty(customElements, 'get', {value: getCE});
-defineProperty(customElements, 'whenDefined', {value: whenDefined});
-defineProperty(document, 'createElement', {
-  value(name, options) {
-    const is = options && options.is;
-    return is ? new (registry.get(is)) : createElement.call(document, name);
+    defined.get(is)._(Class);
   }
 });
 function parseShadow(element) {

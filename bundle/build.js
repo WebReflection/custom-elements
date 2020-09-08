@@ -23,6 +23,7 @@ const {
   Error, TypeError
 } = self;
 const Promise = self.Promise || Lie;
+const {defineProperty, getOwnPropertyNames, setPrototypeOf} = Object;
 ${''.replace.call(
   template,
   /\/\/ (@webreflection\/.+)/g,
@@ -31,6 +32,7 @@ ${''.replace.call(
   .replace(/import .*/g, '')
   .replace('if (!self.customElements) {', 'if (legacy) {')
   .replace(/const \{[^}]+\} = self;/g, '')
+  .replace(/const \{[^}]+\} = Object;/g, '')
   .replace(/[\r\n]{2,}/g, '\n')
   .trim()
 }

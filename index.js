@@ -175,6 +175,9 @@
       Error = _self$1.Error,
       TypeError = _self$1.TypeError;
   var Promise$1 = self.Promise || Lie;
+  var defineProperty = Object.defineProperty,
+      getOwnPropertyNames = Object.getOwnPropertyNames,
+      setPrototypeOf = Object.setPrototypeOf;
   var legacy = !self.customElements;
 
   if (legacy) {
@@ -188,8 +191,6 @@
     };
 
     var createElement = document$1.createElement;
-    var defineProperty = Object.defineProperty,
-        setPrototypeOf = Object.setPrototypeOf;
     var classes = new Map();
     var defined = new Map();
     var prototypes = new Map();
@@ -251,10 +252,10 @@
             parse(document$1.querySelectorAll(is));
           });
 
-          defined.get(is)._();
+          defined.get(is)._(Class);
         },
-        get: function get(selector) {
-          return registry.get(selector);
+        get: function get(is) {
+          return registry.get(is);
         },
         whenDefined: whenDefined
       }
@@ -293,6 +294,19 @@
       legacy = document$1.createElement('li', {
         is: is
       }).outerHTML.indexOf(is) < 0;
+      var _self$customElements = self.customElements,
+          get = _self$customElements.get,
+          _whenDefined = _self$customElements.whenDefined;
+      defineProperty(self.customElements, 'whenDefined', {
+        configurable: true,
+        value: function value(is) {
+          var _this = this;
+
+          return _whenDefined.call(this, is).then(function (value) {
+            return value || get.call(_this, is);
+          });
+        }
+      });
     } catch (o_O) {
       legacy = !legacy;
     }
@@ -311,10 +325,7 @@
     var attachShadow = Element.prototype.attachShadow;
     var _createElement = document$1.createElement;
     var define = customElements.define,
-        get = customElements.get;
-    var _defineProperty = Object.defineProperty,
-        getOwnPropertyNames = Object.getOwnPropertyNames,
-        _setPrototypeOf = Object.setPrototypeOf;
+        _get = customElements.get;
     var shadowRoots = new WeakMap$1();
     var shadows = new Set$1();
 
@@ -329,15 +340,15 @@
     var shadowed = [];
     var _query = [];
 
-    var getCE = function getCE(name) {
-      return _registry.get(name) || get.call(customElements, name);
+    var getCE = function getCE(is) {
+      return _registry.get(is) || _get.call(customElements, is);
     };
 
     var _handle = function _handle(element, connected, selector) {
       var proto = _prototypes.get(selector);
 
       if (connected && !proto.isPrototypeOf(element)) {
-        _override = _setPrototypeOf(element, proto);
+        _override = setPrototypeOf(element, proto);
 
         try {
           new proto.constructor();
@@ -367,7 +378,7 @@
     }),
         parseShadowed = _qsaObserver3.parse;
 
-    var _whenDefined = function _whenDefined(name) {
+    var _whenDefined2 = function _whenDefined2(name) {
       if (!_defined.has(name)) {
         var _,
             $ = new Promise$1(function ($) {
@@ -383,7 +394,7 @@
       return _defined.get(name).$;
     };
 
-    var _augment = attributesObserver(_whenDefined, MutationObserver$1);
+    var _augment = attributesObserver(_whenDefined2, MutationObserver$1);
 
     var _override = null;
     getOwnPropertyNames(self).filter(function (k) {
@@ -402,19 +413,22 @@
         var element = _createElement.call(document$1, tag);
 
         element.setAttribute('is', is);
-        return _augment(_setPrototypeOf(element, constructor.prototype), is);
+        return _augment(setPrototypeOf(element, constructor.prototype), is);
       }
 
 
-
       (HTMLBuiltIn.prototype = self[k].prototype).constructor = HTMLBuiltIn;
-
-      _defineProperty(self, k, {
+      defineProperty(self, k, {
         value: HTMLBuiltIn
       });
     });
-
-    _defineProperty(Element.prototype, 'attachShadow', {
+    defineProperty(document$1, 'createElement', {
+      value: function value(name, options) {
+        var is = options && options.is;
+        return is ? new (_registry.get(is))() : _createElement.call(document$1, name);
+      }
+    });
+    defineProperty(Element.prototype, 'attachShadow', {
       value: function value() {
         var root = attachShadow.apply(this, arguments);
 
@@ -432,8 +446,16 @@
         return root;
       }
     });
-
-    _defineProperty(customElements, 'define', {
+    defineProperty(customElements, 'get', {
+      configurable: true,
+      value: getCE
+    });
+    defineProperty(customElements, 'whenDefined', {
+      configurable: true,
+      value: _whenDefined2
+    });
+    defineProperty(customElements, 'define', {
+      configurable: true,
       value: function value(is, Class, options) {
         var selector;
         var tag = options && options["extends"];
@@ -457,7 +479,7 @@
           shadowed.push(selector = is);
         }
 
-        _whenDefined(is).then(function () {
+        _whenDefined2(is).then(function () {
           if (tag) {
             _parse(document$1.querySelectorAll(selector));
 
@@ -465,22 +487,7 @@
           } else parseShadowed(document$1.querySelectorAll(selector));
         });
 
-        _defined.get(is)._();
-      }
-    });
-
-    _defineProperty(customElements, 'get', {
-      value: getCE
-    });
-
-    _defineProperty(customElements, 'whenDefined', {
-      value: _whenDefined
-    });
-
-    _defineProperty(document$1, 'createElement', {
-      value: function value(name, options) {
-        var is = options && options.is;
-        return is ? new (_registry.get(is))() : _createElement.call(document$1, name);
+        _defined.get(is)._(Class);
       }
     });
   }
