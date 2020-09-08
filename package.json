@@ -38,6 +38,7 @@
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@webreflection/custom-elements-builtin": "^0.1.14",
     "@webreflection/custom-elements-no-builtin": "^0.1.8",
+    "@webreflection/custom-elements-when-defined": "^0.1.0",
     "ascjs": "^4.0.1",
     "rollup": "^2.26.11",
     "terser": "^5.3.0"

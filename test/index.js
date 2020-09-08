@@ -246,5 +246,8 @@
   }( /*#__PURE__*/_wrapNativeSuper(HTMLDivElement)), {
     "extends": 'div'
   });
+  customElements.whenDefined('custom-element').then(function (Class) {
+    console.assert(typeof Class === 'function', 'Class not passed once defined');
+  });
 
 }());

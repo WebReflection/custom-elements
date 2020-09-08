@@ -38,3 +38,7 @@ customElements.define(
   },
   {extends: 'div'}
 );
+
+customElements.whenDefined('custom-element').then(Class => {
+  console.assert(typeof Class === 'function', 'Class not passed once defined');
+});

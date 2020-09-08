@@ -302,8 +302,8 @@
         value: function value(is) {
           var _this = this;
 
-          return _whenDefined.call(this, is).then(function (value) {
-            return value || get.call(_this, is);
+          return _whenDefined.call(this, is).then(function (Class) {
+            return Class || get.call(_this, is);
           });
         }
       });
