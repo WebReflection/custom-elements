@@ -14,9 +14,10 @@
   <script src="./index.js"></script>
   <script>
   setTimeout(function () {
-    document.body.appendChild(
+    const ce = document.body.appendChild(
       document.createElement('custom-element')
     );
+    ce.hello();
     document.body.appendChild(
       document.createElement('div', {is: 'built-in'})
     );

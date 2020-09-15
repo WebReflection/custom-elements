@@ -195,6 +195,11 @@
       value: function disconnectedCallback() {
         document.body.appendChild(document.createElement('div')).textContent = 'OK';
       }
+    }, {
+      key: "hello",
+      value: function hello() {
+        this.innerHTML = 'Hello';
+      }
     }]);
 
     return _class;

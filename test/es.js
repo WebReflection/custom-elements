@@ -14,6 +14,9 @@ customElements.define('custom-element', class extends HTMLElement {
   disconnectedCallback() {
     document.body.appendChild(document.createElement('div')).textContent = 'OK';
   }
+  hello() {
+    this.innerHTML = 'Hello';
+  }
 });
 
 customElements.define(
