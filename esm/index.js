@@ -48,6 +48,7 @@ if (legacy) {
   defineProperty(self, 'customElements', {
     configurable: true,
     value: {
+      _: {classes},
       define: (is, Class) => {
         if (registry.has(is))
           throw new Error(`the name "${is}" has already been used with this registry`);
@@ -125,7 +126,7 @@ defineProperty(self.customElements, 'whenDefined', {
     
 const {attachShadow} = Element.prototype;
 const {createElement} = document;
-const {define, get} = customElements;
+const {_, define, get} = customElements;
 const shadowRoots = new WeakMap;
 const shadows = new Set;
 const classes = new Map;
@@ -173,8 +174,11 @@ getOwnPropertyNames(self)
   .forEach(k => {
     function HTMLBuiltIn() {
       const {constructor} = this;
-      if (!classes.has(constructor))
+      if (!classes.has(constructor)) {
+        if (_ && _.classes.has(constructor))
+          return;
         throw new TypeError('Illegal constructor');
+      }
       const {is, tag} = classes.get(constructor);
       if (override)
         return augment(override, is);
