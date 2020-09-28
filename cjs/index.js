@@ -205,14 +205,15 @@ defineProperty(document, 'createElement', {
     return element;
   }
 });
-defineProperty(Element.prototype, 'attachShadow', {
-  value() {
-    const root = attachShadow.apply(this, arguments);
-    const {parse} = qsaObserver({query, root, handle});
-    shadowRoots.set(this, {root, parse});
-    return root;
-  }
-});
+if (attachShadow)
+  defineProperty(Element.prototype, 'attachShadow', {
+    value() {
+      const root = attachShadow.apply(this, arguments);
+      const {parse} = qsaObserver({query, root, handle});
+      shadowRoots.set(this, {root, parse});
+      return root;
+    }
+  });
 defineProperty(customElements, 'get', {
   configurable: true,
   value: getCE
