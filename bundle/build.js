@@ -20,7 +20,7 @@ const {
   document,
   Map, MutationObserver, Object, Set, WeakMap,
   Element, HTMLElement, Node,
-  Error, TypeError
+  Error, TypeError, Reflect
 } = self;
 const Promise = self.Promise || Lie;
 const {defineProperty, getOwnPropertyNames, setPrototypeOf} = Object;
