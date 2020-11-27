@@ -65,7 +65,11 @@ if (legacy) {
       whenDefined
     }
   });
-  (HTMLBuiltIn.prototype = HTMLElement.prototype).constructor = HTMLBuiltIn;
+  defineProperty(
+    HTMLBuiltIn.prototype = HTMLElement.prototype,
+    'constructor',
+    {value: HTMLBuiltIn}
+  );
   defineProperty(self, 'HTMLElement', {
     configurable: true,
     value: HTMLBuiltIn
@@ -192,7 +196,11 @@ getOwnPropertyNames(self)
         return construct.call(this, HTMLElement, [], constructor);
     }
 
-    (HTMLBuiltIn.prototype = HTMLElement.prototype).constructor = HTMLBuiltIn;
+    defineProperty(
+      HTMLBuiltIn.prototype = HTMLElement.prototype,
+      'constructor',
+      {value: HTMLBuiltIn}
+    );
     defineProperty(self, k, {value: HTMLBuiltIn});
   });
 defineProperty(document, 'createElement', {
@@ -229,10 +237,10 @@ defineProperty(customElements, 'whenDefined', {
 defineProperty(customElements, 'define', {
   configurable: true,
   value(is, Class, options) {
-    let selector;
-    const tag = options && options.extends;
     if (getCE(is))
       throw new Error(`'${is}' has already been defined as a custom element`);
+    let selector;
+    const tag = options && options.extends;
     classes.set(Class, tag ? {is, tag} : {is: '', tag: is});
     if (tag) {
       selector = `${tag}[is="${is}"]`;
