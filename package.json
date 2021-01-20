@@ -36,7 +36,7 @@
     "@babel/preset-env": "^7.12.7",
     "@rollup/plugin-babel": "^5.2.1",
     "@rollup/plugin-node-resolve": "^10.0.0",
-    "@webreflection/custom-elements-builtin": "^0.1.23",
+    "@webreflection/custom-elements-builtin": "^0.1.24",
     "@webreflection/custom-elements-no-builtin": "^0.1.15",
     "@webreflection/custom-elements-when-defined": "^0.1.0",
     "ascjs": "^4.0.3",
