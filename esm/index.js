@@ -10,7 +10,7 @@ const {
   Error, TypeError, Reflect
 } = self;
 const Promise = self.Promise || Lie;
-const {defineProperty, getOwnPropertyNames, setPrototypeOf} = Object;
+const {defineProperty, keys, getOwnPropertyNames, setPrototypeOf} = Object;
 export default self => {
   let legacy = !self.customElements;
   
@@ -145,9 +145,19 @@ const getCE = is => registry.get(is) || get.call(customElements, is);
 const handle = (element, connected, selector) => {
   const proto = prototypes.get(selector);
   if (connected && !proto.isPrototypeOf(element)) {
+    const k = keys(element);
+    const v = k.map(key => {
+      const value = element[key];
+      delete element[key];
+      return value;
+    });
     override = setPrototypeOf(element, proto);
     try { new proto.constructor; }
-    finally { override = null; }
+    finally {
+      override = null;
+      for (let i = 0, {length} = k; i < length; i++)
+        element[k[i]] = v[i];
+    }
   }
   const method = `${connected ? '' : 'dis'}connectedCallback`;
   if (method in proto)

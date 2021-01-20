@@ -23,7 +23,7 @@ const {
   Error, TypeError, Reflect
 } = self;
 const Promise = self.Promise || Lie;
-const {defineProperty, getOwnPropertyNames, setPrototypeOf} = Object;
+const {defineProperty, keys, getOwnPropertyNames, setPrototypeOf} = Object;
 ${''.replace.call(
   template,
   /\/\/ (@webreflection\/.+)/g,
