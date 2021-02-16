@@ -162,13 +162,6 @@
 
     var _super = _createSuper(_class);
 
-    _createClass(_class, null, [{
-      key: "observedAttributes",
-      get: function get() {
-        return ['test'];
-      }
-    }]);
-
     function _class() {
       var _this;
 
@@ -180,6 +173,12 @@
     }
 
     _createClass(_class, [{
+      key: "expando",
+      get: function get() {},
+      set: function set(value) {
+        console.log(this.tagName, 'expando set with value', value);
+      }
+    }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, oldValue, newValue) {
         console.log(this.tagName, name, oldValue, newValue);
@@ -200,6 +199,11 @@
       value: function hello() {
         this.innerHTML = 'Hello';
       }
+    }], [{
+      key: "observedAttributes",
+      get: function get() {
+        return ['test'];
+      }
     }]);
 
     return _class;
@@ -208,13 +212,6 @@
     _inherits(_class2, _HTMLDivElement);
 
     var _super2 = _createSuper(_class2);
-
-    _createClass(_class2, null, [{
-      key: "observedAttributes",
-      get: function get() {
-        return ['test'];
-      }
-    }]);
 
     function _class2() {
       var _this2;
@@ -230,6 +227,12 @@
     }
 
     _createClass(_class2, [{
+      key: "expando",
+      get: function get() {},
+      set: function set(value) {
+        console.log(this.tagName, 'expando set with value', value);
+      }
+    }, {
       key: "attributeChangedCallback",
       value: function attributeChangedCallback(name, oldValue, newValue) {
         console.log(this.tagName, this.getAttribute('is'), name, oldValue, newValue);
@@ -244,6 +247,11 @@
       key: "disconnectedCallback",
       value: function disconnectedCallback() {
         document.body.appendChild(document.createElement('div')).textContent = 'OK';
+      }
+    }], [{
+      key: "observedAttributes",
+      get: function get() {
+        return ['test'];
       }
     }]);
 

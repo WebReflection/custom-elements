@@ -1,9 +1,9 @@
 'use strict';
 /*! (c) Andrea Giammarchi @webreflection ISC */
 
-const Lie = (m => m.__esModule ? /* istanbul ignore next */ m.default : /* istanbul ignore next */ m)(require('@webreflection/lie'));
-const attributesObserver = (m => m.__esModule ? /* istanbul ignore next */ m.default : /* istanbul ignore next */ m)(require('@webreflection/custom-elements-attributes'));
-const qsaObserver = (m => m.__esModule ? /* istanbul ignore next */ m.default : /* istanbul ignore next */ m)(require('qsa-observer'));
+const Lie = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('@webreflection/lie'));
+const attributesObserver = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('@webreflection/custom-elements-attributes'));
+const qsaObserver = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('qsa-observer'));
 const {
   document,
   Map, MutationObserver, Object, Set, WeakMap,
@@ -14,6 +14,20 @@ const Promise = self.Promise || Lie;
 const {defineProperty, keys, getOwnPropertyNames, setPrototypeOf} = Object;
 module.exports = self => {
   let legacy = !self.customElements;
+  
+const expando = element => {
+  const key = keys(element);
+  const value = [];
+  const {length} = key;
+  for (let i = 0; i < length; i++) {
+    value[i] = element[key[i]];
+    delete element[key[i]];
+  }
+  return () => {
+    for (let i = 0; i < length; i++)
+      element[key[i]] = value[i];
+  };
+};
   
 if (legacy) {
   
@@ -28,9 +42,13 @@ if (legacy) {
   const handle = (element, connected, selector) => {
     const proto = prototypes.get(selector);
     if (connected && !proto.isPrototypeOf(element)) {
+      const redefine = expando(element);
       override = setPrototypeOf(element, proto);
       try { new proto.constructor; }
-      finally { override = null; }
+      finally {
+        override = null;
+        redefine();
+      }
     }
     const method = `${connected ? '' : 'dis'}connectedCallback`;
     if (method in proto)
@@ -146,18 +164,12 @@ const getCE = is => registry.get(is) || get.call(customElements, is);
 const handle = (element, connected, selector) => {
   const proto = prototypes.get(selector);
   if (connected && !proto.isPrototypeOf(element)) {
-    const k = keys(element);
-    const v = k.map(key => {
-      const value = element[key];
-      delete element[key];
-      return value;
-    });
+    const redefine = expando(element);
     override = setPrototypeOf(element, proto);
     try { new proto.constructor; }
     finally {
       override = null;
-      for (let i = 0, {length} = k; i < length; i++)
-        element[k[i]] = v[i];
+      redefine();
     }
   }
   const method = `${connected ? '' : 'dis'}connectedCallback`;

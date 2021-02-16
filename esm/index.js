@@ -14,6 +14,20 @@ const {defineProperty, keys, getOwnPropertyNames, setPrototypeOf} = Object;
 export default self => {
   let legacy = !self.customElements;
   
+const expando = element => {
+  const key = keys(element);
+  const value = [];
+  const {length} = key;
+  for (let i = 0; i < length; i++) {
+    value[i] = element[key[i]];
+    delete element[key[i]];
+  }
+  return () => {
+    for (let i = 0; i < length; i++)
+      element[key[i]] = value[i];
+  };
+};
+  
 if (legacy) {
   
   
@@ -27,9 +41,13 @@ if (legacy) {
   const handle = (element, connected, selector) => {
     const proto = prototypes.get(selector);
     if (connected && !proto.isPrototypeOf(element)) {
+      const redefine = expando(element);
       override = setPrototypeOf(element, proto);
       try { new proto.constructor; }
-      finally { override = null; }
+      finally {
+        override = null;
+        redefine();
+      }
     }
     const method = `${connected ? '' : 'dis'}connectedCallback`;
     if (method in proto)
@@ -145,18 +163,12 @@ const getCE = is => registry.get(is) || get.call(customElements, is);
 const handle = (element, connected, selector) => {
   const proto = prototypes.get(selector);
   if (connected && !proto.isPrototypeOf(element)) {
-    const k = keys(element);
-    const v = k.map(key => {
-      const value = element[key];
-      delete element[key];
-      return value;
-    });
+    const redefine = expando(element);
     override = setPrototypeOf(element, proto);
     try { new proto.constructor; }
     finally {
       override = null;
-      for (let i = 0, {length} = k; i < length; i++)
-        element[k[i]] = v[i];
+      redefine();
     }
   }
   const method = `${connected ? '' : 'dis'}connectedCallback`;

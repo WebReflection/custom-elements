@@ -11,6 +11,7 @@ module.exports = {
     })
   ],
   output: {
+    esModule: false,
     file: './tmp.js',
     format: 'iife'
   }

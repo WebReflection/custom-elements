@@ -14,6 +14,7 @@ module.exports = {
     terser()
   ],
   output: {
+    esModule: false,
     file: './es.js',
     format: 'iife'
   }

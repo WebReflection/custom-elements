@@ -4,6 +4,10 @@ customElements.define('custom-element', class extends HTMLElement {
     super();
     console.log(this.tagName, 'constructed');
   }
+  get expando() {}
+  set expando(value) {
+    console.log(this.tagName, 'expando set with value', value);
+  }
   attributeChangedCallback(name, oldValue, newValue) {
     console.log(this.tagName, name, oldValue, newValue);
   }
@@ -27,6 +31,10 @@ customElements.define(
       super();
       this.setAttribute('is', 'built-in');
       console.log(this.tagName, 'constructed');
+    }
+    get expando() {}
+    set expando(value) {
+      console.log(this.tagName, 'expando set with value', value);
     }
     attributeChangedCallback(name, oldValue, newValue) {
       console.log(this.tagName, this.getAttribute('is'), name, oldValue, newValue);

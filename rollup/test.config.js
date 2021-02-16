@@ -12,6 +12,7 @@ export default {
   ],
   
   output: {
+    esModule: false,
     exports: 'named',
     file: './test/index.js',
     format: 'iife'

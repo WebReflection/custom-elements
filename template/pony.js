@@ -1,5 +1,6 @@
 export default self => {
   let legacy = !self.customElements;
+  // @webreflection/custom-elements-upgrade/esm/index.js
   // @webreflection/custom-elements-no-builtin/esm/index.js
   else {
     try {

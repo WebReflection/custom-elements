@@ -29,6 +29,7 @@ ${''.replace.call(
   /\/\/ (@webreflection\/.+)/g,
   (_, path) => readFileSync(join(__dirname, '..', 'node_modules', path))
 )
+  .replace('export const expando =', 'const expando =')
   .replace(/import .*/g, '')
   .replace('if (!self.customElements) {', 'if (legacy) {')
   .replace(/const \{[^}]+\} = self;/g, '')
