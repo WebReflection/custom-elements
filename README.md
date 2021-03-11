@@ -4,6 +4,13 @@
 
 An unobtrusive customElements V1 polyfill.
 
+## Warning: [@ungap/custom-elements](https://github.com/ungap/custom-elements#readme) is what you are looking for!
+
+This module is a *ponyfill* but the official module for CE is not here.
+
+Use this module **only** if you understand what a *ponyfill* here, and only if you are capable of not invoking this more than once in your project.
+
+- - -
 
 ## Compatibility
 
