@@ -17,7 +17,9 @@
     const ce = document.body.appendChild(
       document.createElement('custom-element')
     );
-    ce.hello();
+    setTimeout(function () {
+      ce.hello();
+    }, 1);
     document.body.appendChild(
       document.createElement('div', {is: 'built-in'})
     );
