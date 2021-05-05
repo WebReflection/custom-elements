@@ -1,6 +1,6 @@
 {
   "name": "@webreflection/custom-elements",
-  "version": "0.2.15",
+  "version": "1.0.0",
   "description": "All inclusive customElements polyfill for every browser",
   "main": "./cjs/index.js",
   "unpkg": "min.js",
