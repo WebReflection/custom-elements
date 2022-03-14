@@ -148,7 +148,7 @@ defineProperty(self.customElements, 'whenDefined', {
     
 const {attachShadow} = Element.prototype;
 const {createElement} = document;
-const {define, get} = customElements;
+const {define, get, upgrade} = customElements;
 const {construct} = Reflect || {construct(HTMLElement) {
   return HTMLElement.call(this);
 }};
@@ -254,6 +254,23 @@ defineProperty(customElements, 'get', {
 defineProperty(customElements, 'whenDefined', {
   configurable: true,
   value: whenDefined
+});
+defineProperty(customElements, 'upgrade', {
+  configurable: true,
+  value(element) {
+    const is = element.getAttribute('is');
+    if (is) {
+      const constructor = registry.get(is);
+      if (constructor) {
+        augment(setPrototypeOf(element, constructor.prototype), is);
+        // apparently unnecessary because this is handled by qsa observer
+        // if (element.isConnected && element.connectedCallback)
+        //   element.connectedCallback();
+        return;
+      }
+    }
+    upgrade.call(customElements, element);
+  }
 });
 defineProperty(customElements, 'define', {
   configurable: true,
