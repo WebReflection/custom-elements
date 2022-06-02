@@ -13,7 +13,6 @@ function build(file) {
   writeFileSync(
     join(__dirname, file),
   `
-import Lie from '@webreflection/lie';
 import attributesObserver from '@webreflection/custom-elements-attributes';
 import qsaObserver from 'qsa-observer';
 const {
@@ -22,7 +21,6 @@ const {
   Element, HTMLElement, Node,
   Error, TypeError, Reflect
 } = self;
-const Promise = self.Promise || Lie;
 const {defineProperty, keys, getOwnPropertyNames, setPrototypeOf} = Object;
 ${''.replace.call(
   template,
@@ -30,6 +28,7 @@ ${''.replace.call(
   (_, path) => readFileSync(join(__dirname, '..', 'node_modules', path))
 )
   .replace('export const expando =', 'const expando =')
+  .replace('export const attributes =', 'const attributes =')
   .replace(/import .*/g, '')
   .replace('if (!self.customElements) {', 'if (legacy) {')
   .replace(/const \{[^}]+\} = self;/g, '')

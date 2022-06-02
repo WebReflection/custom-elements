@@ -1,7 +1,6 @@
 'use strict';
 /*! (c) Andrea Giammarchi @webreflection ISC */
 
-const Lie = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('@webreflection/lie'));
 const attributesObserver = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('@webreflection/custom-elements-attributes'));
 const qsaObserver = (m => /* c8 ignore start */ m.__esModule ? m.default : m /* c8 ignore stop */)(require('qsa-observer'));
 const {
@@ -10,7 +9,6 @@ const {
   Element, HTMLElement, Node,
   Error, TypeError, Reflect
 } = self;
-const Promise = self.Promise || Lie;
 const {defineProperty, keys, getOwnPropertyNames, setPrototypeOf} = Object;
 module.exports = self => {
   let legacy = !self.customElements;
@@ -28,9 +26,23 @@ const expando = element => {
       element[key[i]] = value[i];
   };
 };
+const attributes = element => {
+  const {attributeChangedCallback, constructor} = element;
+  if (attributeChangedCallback) {
+    const {observedAttributes} = constructor;
+    if (observedAttributes) {
+      const {length} = observedAttributes;
+      for (let i = 0; i < length; i++) {
+        const name = observedAttributes[i];
+        const value = element.getAttribute(name);
+        if (value != null)
+          attributeChangedCallback.call(element, name, null, value);
+      }
+    }
+  }
+};
   
 if (legacy) {
-  
   
   const {createElement} = document;
   
@@ -58,7 +70,7 @@ if (legacy) {
   let override = null;
   const whenDefined = name => {
     if (!defined.has(name)) {
-      let _, $ = new Lie($ => { _ = $; });
+      let _, $ = new Promise($ => { _ = $; });
       defined.set(name, {$, _});
     }
     return defined.get(name).$;
@@ -146,7 +158,6 @@ defineProperty(self.customElements, 'whenDefined', {
   if (legacy) {
     const customElements = self.customElements;
     
-const {attachShadow} = Element.prototype;
 const {createElement} = document;
 const {define, get, upgrade} = customElements;
 const {construct} = Reflect || {construct(HTMLElement) {
@@ -190,6 +201,15 @@ const {parse: parseShadowed} = qsaObserver({
     }
   }
 });
+// qsaObserver also patches attachShadow
+// be sure this runs *after* that
+const {attachShadow} = Element.prototype;
+if (attachShadow)
+  Element.prototype.attachShadow = function (init) {
+    const root = attachShadow.call(this, init);
+    shadowRoots.set(this, root);
+    return root;
+  };
 const whenDefined = name => {
   if (!defined.has(name)) {
     let _, $ = new Promise($ => { _ = $; });
@@ -241,12 +261,6 @@ defineProperty(document, 'createElement', {
     return element;
   }
 });
-if (attachShadow)
-  Element.prototype.attachShadow = function (init) {
-    const root = attachShadow.call(this, init);
-    shadowRoots.set(this, root);
-    return root;
-  };
 defineProperty(customElements, 'get', {
   configurable: true,
   value: getCE
