@@ -10,6 +10,16 @@
     font-weight: bold;
   }
   </style>
+  <script>
+  var observe = MutationObserver.prototype.observe;
+  MutationObserver.prototype.observe = function () {
+    console.log('MutationObserver is ACTIVE');
+    return observe.apply(this, arguments);
+  };
+  </script>
+  <!-- including it twice to ensure no harakiri happens -->
+  <!-- https://github.com/ungap/custom-elements/issues/15 -->
+  <script src="../index.js"></script>
   <script src="../index.js"></script>
   <script src="./index.js"></script>
   <script>
