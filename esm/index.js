@@ -75,42 +75,33 @@ if (legacy) {
     return defined.get(name).$;
   };
   const augment = attributesObserver(whenDefined, MutationObserver);
-  defineProperty(self, 'customElements', {
-    configurable: true,
-    value: {
-      define: (is, Class) => {
-        if (registry.has(is))
-          throw new Error(`the name "${is}" has already been used with this registry`);
-        classes.set(Class, is);
-        prototypes.set(is, Class.prototype);
-        registry.set(is, Class);
-        query.push(is);
-        whenDefined(is).then(() => {
-          parse(document.querySelectorAll(is));
-        });
-        defined.get(is)._(Class);
-      },
-      get: is => registry.get(is),
-      whenDefined
-    }
-  });
+  self.customElements = {
+    define: (is, Class) => {
+      if (registry.has(is))
+        throw new Error(`the name "${is}" has already been used with this registry`);
+      classes.set(Class, is);
+      prototypes.set(is, Class.prototype);
+      registry.set(is, Class);
+      query.push(is);
+      whenDefined(is).then(() => {
+        parse(document.querySelectorAll(is));
+      });
+      defined.get(is)._(Class);
+    },
+    get: is => registry.get(is),
+    whenDefined
+  };
   defineProperty(
     HTMLBuiltIn.prototype = HTMLElement.prototype,
     'constructor',
     {value: HTMLBuiltIn}
   );
-  defineProperty(self, 'HTMLElement', {
-    configurable: true,
-    value: HTMLBuiltIn
-  });
-  defineProperty(document, 'createElement', {
-    configurable: true,
-    value(name, options) {
-      const is = options && options.is;
-      const Class = is ? registry.get(is) : registry.get(name);
-      return Class ? new Class :  createElement.call(document, name);
-    }
-  });
+  self.HTMLElement = HTMLBuiltIn;
+  document.createElement = function (name, options) {
+    const is = options && options.is;
+    const Class = is ? registry.get(is) : registry.get(name);
+    return Class ? new Class :  createElement.call(document, name);
+  };
   // in case ShadowDOM is used through a polyfill, to avoid issues
   // with builtin extends within shadow roots
   if (!('isConnected' in Node.prototype))
@@ -143,14 +134,10 @@ if (legacy) {
         const is = 'extends-li';
         self.customElements.define('extends-li', LI, {'extends': 'li'});
         legacy = document.createElement('li', {is}).outerHTML.indexOf(is) < 0;
-        
-const {get, whenDefined} = self.customElements;
-defineProperty(self.customElements, 'whenDefined', {
-  configurable: true,
-  value(is) {
-    return whenDefined.call(this, is).then(Class => Class || get.call(this, is));
-  }
-});
+        const {get, whenDefined} = self.customElements;
+self.customElements.whenDefined = function (is) {
+  return whenDefined.call(this, is).then(Class => Class || get.call(this, is));
+};
       }
       catch (o_O) {}
     }
@@ -246,75 +233,60 @@ getOwnPropertyNames(self)
     );
     defineProperty(self, k, {value: HTMLBuiltIn});
   });
-defineProperty(document, 'createElement', {
-  configurable: true,
-  value(name, options) {
-    const is = options && options.is;
-    if (is) {
-      const Class = registry.get(is);
-      if (Class && classes.get(Class).tag === name)
-        return new Class;
-    }
-    const element = createElement.call(document, name);
-    if (is)
-      element.setAttribute('is', is);
-    return element;
+document.createElement = function (name, options) {
+  const is = options && options.is;
+  if (is) {
+    const Class = registry.get(is);
+    if (Class && classes.get(Class).tag === name)
+      return new Class;
   }
-});
-defineProperty(customElements, 'get', {
-  configurable: true,
-  value: getCE
-});
-defineProperty(customElements, 'whenDefined', {
-  configurable: true,
-  value: whenDefined
-});
-defineProperty(customElements, 'upgrade', {
-  configurable: true,
-  value(element) {
-    const is = element.getAttribute('is');
-    if (is) {
-      const constructor = registry.get(is);
-      if (constructor) {
-        augment(setPrototypeOf(element, constructor.prototype), is);
-        // apparently unnecessary because this is handled by qsa observer
-        // if (element.isConnected && element.connectedCallback)
-        //   element.connectedCallback();
-        return;
-      }
+  const element = createElement.call(document, name);
+  if (is)
+    element.setAttribute('is', is);
+  return element;
+};
+customElements.get = getCE;
+customElements.whenDefined = whenDefined;
+customElements.upgrade = function (element) {
+  const is = element.getAttribute('is');
+  if (is) {
+    const constructor = registry.get(is);
+    if (constructor) {
+      augment(setPrototypeOf(element, constructor.prototype), is);
+      // apparently unnecessary because this is handled by qsa observer
+      // if (element.isConnected && element.connectedCallback)
+      //   element.connectedCallback();
+      return;
     }
-    upgrade.call(customElements, element);
   }
-});
-defineProperty(customElements, 'define', {
-  configurable: true,
-  value(is, Class, options) {
-    if (getCE(is))
-      throw new Error(`'${is}' has already been defined as a custom element`);
-    let selector;
-    const tag = options && options.extends;
-    classes.set(Class, tag ? {is, tag} : {is: '', tag: is});
+  upgrade.call(customElements, element);
+};
+customElements.define = function (is, Class, options) {
+  if (getCE(is))
+    throw new Error(`'${is}' has already been defined as a custom element`);
+  let selector;
+  const tag = options && options.extends;
+  classes.set(Class, tag ? {is, tag} : {is: '', tag: is});
+  if (tag) {
+    selector = `${tag}[is="${is}"]`;
+    prototypes.set(selector, Class.prototype);
+    registry.set(is, Class);
+    query.push(selector);
+  }
+  else {
+    define.apply(customElements, arguments);
+    shadowed.push(selector = is);
+  }
+  whenDefined(is).then(() => {
     if (tag) {
-      selector = `${tag}[is="${is}"]`;
-      prototypes.set(selector, Class.prototype);
-      registry.set(is, Class);
-      query.push(selector);
+      parse(document.querySelectorAll(selector));
+      shadows.forEach(parseShadow, [selector]);
     }
-    else {
-      define.apply(customElements, arguments);
-      shadowed.push(selector = is);
-    }
-    whenDefined(is).then(() => {
-      if (tag) {
-        parse(document.querySelectorAll(selector));
-        shadows.forEach(parseShadow, [selector]);
-      }
-      else
-        parseShadowed(document.querySelectorAll(selector));
-    });
-    defined.get(is)._(Class);
-  }
-});
+    else
+      parseShadowed(document.querySelectorAll(selector));
+  });
+  defined.get(is)._(Class);
+};
 function parseShadow(element) {
   const root = shadowRoots.get(element);
   parse(root.querySelectorAll(this), element.isConnected);

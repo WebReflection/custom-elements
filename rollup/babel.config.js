@@ -1,7 +1,7 @@
-const {nodeResolve} = require('@rollup/plugin-node-resolve');
-const babel = require('@rollup/plugin-babel').default;
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import babel from '@rollup/plugin-babel';
 
-module.exports = {
+export default {
   input: './bundle/index.js',
   plugins: [
     nodeResolve(),
