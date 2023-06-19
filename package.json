@@ -37,7 +37,7 @@
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.4.0",
-    "@webreflection/custom-elements-builtin": "^0.4.0",
+    "@webreflection/custom-elements-builtin": "^0.4.1",
     "@webreflection/custom-elements-no-builtin": "^0.3.0",
     "@webreflection/custom-elements-when-defined": "^0.2.0",
     "ascjs": "^5.0.1",
