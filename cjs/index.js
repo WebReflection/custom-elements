@@ -133,14 +133,14 @@ if (legacy) {
   }
 }
   else {
-    legacy = !self.customElements.get('extends-li');
+    legacy = !self.customElements.get('extends-br');
     if (legacy) {
       try {
-        function LI() { return self.Reflect.construct(HTMLLIElement, [], LI); }
-        LI.prototype = HTMLLIElement.prototype;
-        const is = 'extends-li';
-        self.customElements.define('extends-li', LI, {'extends': 'li'});
-        legacy = document.createElement('li', {is}).outerHTML.indexOf(is) < 0;
+        function BR() { return self.Reflect.construct(HTMLBRElement, [], BR); }
+        BR.prototype = HTMLLIElement.prototype;
+        const is = 'extends-br';
+        self.customElements.define('extends-br', BR, {'extends': 'br'});
+        legacy = document.createElement('br', {is}).outerHTML.indexOf(is) < 0;
         const {get, whenDefined} = self.customElements;
 self.customElements.whenDefined = function (is) {
   return whenDefined.call(this, is).then(Class => Class || get.call(this, is));

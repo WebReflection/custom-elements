@@ -32,18 +32,18 @@
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.21.0",
-    "@babel/preset-env": "^7.20.2",
+    "@babel/core": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
     "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-terser": "^0.4.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-terser": "^0.4.3",
     "@webreflection/custom-elements-builtin": "^0.4.1",
     "@webreflection/custom-elements-no-builtin": "^0.3.0",
     "@webreflection/custom-elements-when-defined": "^0.2.0",
     "ascjs": "^5.0.1",
-    "rollup": "^3.18.0",
+    "rollup": "^3.25.1",
     "rollup-plugin-includepaths": "^0.2.4",
-    "terser": "^5.16.5"
+    "terser": "^5.18.1"
   },
   "repository": {
     "type": "git",
